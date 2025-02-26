@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS-Kau-Tools</title>
+    <style>
+        body {
+            background-image: url('https://png.pngtree.com/background/20210706/original/pngtree-creative-blackboard-mathematical-background-picture-image_102289.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .button-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .button-container button {
+            padding: 20px 40px;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+            width: 220px;
+        }
+
+        .button-container button:hover {
+            transform: scale(1.1);
+        }
+
+        .math-button { background-color: #3498db; color: white; }
+        .german-button { background-color: #f1c40f; color: black; }
+        .english-button { background-color: #e74c3c; color: white; }
+        .quop-button { background-color: white; color: black; }
+        .anton-button { background-color: aqua; color: black; }
+
+        .math-button:hover { background-color: #2980b9; }
+        .german-button:hover { background-color: #f39c12; }
+        .english-button:hover { background-color: #c0392b; }
+        .quop-button:hover { background-color: grey; }
+        .anton-button:hover { background-color: lightblue; }
+    </style>
+</head>
+<body>
+
+    <div class="button-wrapper">
+        <div class="button-container">
+            <button class="math-button" onclick="window.location.href='https://testmoz.com/14327600'">Mathe</button>
+            <button class="german-button" onclick="window.location.href='https://testmoz.com/14330806'">Deutsch</button>
+            <button class="english-button" onclick="window.location.href='https://testmoz.com/14330816'">Englisch</button>
+        </div>
+        <div class="button-container">
+            <button class="quop-button" onclick="window.location.href='https://system.quop.de/'">Quop</button>
+            <button class="anton-button" onclick="window.location.href='https://google.com'">Anton</button>
+        </div>
+    </div>
+
+</body>
+</html>
