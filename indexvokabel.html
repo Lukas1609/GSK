@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Englisch Vokabelspiel für die 4. Klasse</title>
+    <style>
+        /* Hintergrund als Mathematische Tafel */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://png.pngtree.com/background/20210706/original/pngtree-creative-blackboard-mathematical-background-picture-image_102289.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+            flex-direction: column;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #f39c12;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .question {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background-color: white;
+            color: #333;
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #f1c40f;
+            transform: scale(1.05);
+        }
+
+        .correct {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 22px;
+            color: #f39c12;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f39c12;
+        }
+
+        /* Stil für den Zurück-Button */
+        .menu-button {
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 20px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+        }
+
+        .menu-button:hover {
+            background-color: #c0392b;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .menu-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Englisch Vokabelspiel</h1>
+        <div class="question" id="question">Was ist die englische Übersetzung von "Apfel"?</div>
+        <div class="button-container">
+            <button onclick="checkAnswer('apple')">Apple</button>
+            <button onclick="checkAnswer('banana')">Banane</button>
+            <button onclick="checkAnswer('orange')">Orange</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <!-- Zurück-Button -->
+    <button class="menu-button" onclick="goBack()">🔙 Zurück</button>
+
+    <script>
+        const vocab = [
+            { english: 'apple', german: 'Apfel' },
+            { english: 'banana', german: 'Banane' },
+            { english: 'orange', german: 'Orange' },
+            { english: 'dog', german: 'Hund' },
+            { english: 'cat', german: 'Katze' },
+            { english: 'house', german: 'Haus' },
+            { english: 'book', german: 'Buch' },
+            { english: 'ball', german: 'Ball' },
+            { english: 'car', german: 'Auto' },
+            { english: 'tree', german: 'Baum' }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const resultElement = document.getElementById('result');
+
+            const randomVocabIndex = Math.floor(Math.random() * vocab.length);
+            const currentVocab = vocab[randomVocabIndex];
+            
+            const isEnglishToGerman = Math.random() < 0.5;
+            const questionText = isEnglishToGerman ? currentVocab.german : currentVocab.english;
+            const correctAnswer = isEnglishToGerman ? currentVocab.english : currentVocab.german;
+
+            questionElement.textContent = `Was ist die Übersetzung von "${questionText}"?`;
+
+            const answers = [correctAnswer, ...getRandomAnswers(correctAnswer)].sort(() => Math.random() - 0.5);
+
+            const buttons = document.querySelectorAll('.button-container button');
+            buttons.forEach((button, index) => {
+                button.textContent = answers[index];
+                button.classList.remove('correct');
+                button.onclick = () => checkAnswer(answers[index], correctAnswer);
+            });
+
+            resultElement.textContent = '';
+        }
+
+        function getRandomAnswers(correctAnswer) {
+            let randomAnswers = [];
+            while (randomAnswers.length < 2) {
+                const randomVocab = vocab[Math.floor(Math.random() * vocab.length)];
+                const randomAnswer = Math.random() < 0.5 ? randomVocab.english : randomVocab.german;
+                if (randomAnswer !== correctAnswer && !randomAnswers.includes(randomAnswer)) {
+                    randomAnswers.push(randomAnswer);
+                }
+            }
+            return randomAnswers;
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            const resultElement = document.getElementById('result');
+
+            if (selectedAnswer === correctAnswer) {
+                score++;
+                resultElement.textContent = 'Richtig! Gute Arbeit!';
+                resultElement.style.color = 'green';
+
+                const buttons = document.querySelectorAll('.button-container button');
+                buttons.forEach((button) => {
+                    if (button.textContent === selectedAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            } else {
+                resultElement.textContent = 'Leider falsch. Versuch es nochmal!';
+                resultElement.style.color = 'red';
+            }
+
+            currentQuestion++;
+            if (currentQuestion < vocab.length) {
+                setTimeout(loadQuestion, 1000);
+            } else {
+                setTimeout(showFinalScore, 1000);
+            }
+        }
+
+        function showFinalScore() {
+            const questionElement = document.getElementById('question');
+            const resultElement = document.getElementById('result');
+            questionElement.textContent = 'Das Spiel ist vorbei!';
+            resultElement.textContent = `Du hast ${score} von ${vocab.length} richtig beantwortet.`;
+            resultElement.style.color = 'black';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

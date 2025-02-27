@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einmaleins-Spiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://png.pngtree.com/background/20210706/original/pngtree-creative-blackboard-mathematical-background-picture-image_102289.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        #name-container, #spiel-container, #end-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1, h2 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        input, button {
+            font-size: 20px;
+            padding: 15px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            width: 80%;
+        }
+
+        input {
+            font-size: 20px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #FF4500;
+        }
+
+        .leicht {
+            background: #32CD32;
+        }
+        
+        .mittel {
+            background: #FFA500;
+        }
+
+        .schwer {
+            background: #DC143C;
+        }
+
+        .selected {
+            background-color: white;
+            color: #000;
+            box-shadow: 0 0 10px #FFD700;
+        }
+
+        #timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        #feedback {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #FFD700;
+        }
+
+        #punkte {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        #aufgabenVerbleibend {
+            font-size: 20px;
+        }
+
+        #losButton {
+            background-color: #4CAF50;
+        }
+
+        #losButton:hover {
+            background-color: #45a049;
+        }
+
+        /* Button ausgrauen */
+        #startButton:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        /* Antwortfeld deaktivieren */
+        #antwort:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        /* Zurück Button oben links wie die Schwierigkeits Buttons */
+        #backButton {
+            background-color: #32CD32;
+            color: black;
+            font-size: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+
+        #backButton:hover {
+            background-color: #28a745;
+        }
+
+        /* Hauptmenü Button unter der schweren Schwierigkeit */
+        #mainMenuButton {
+            background-color: #FFFFFF;
+            color: black;
+            font-size: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #mainMenuButton:hover {
+            background-color: #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Name und Schwierigkeit Auswahl -->
+    <div id="name-container">
+        <h1>🎲 Einmaleins-Spiel 🎲</h1>
+        <input type="text" id="spielerName" placeholder="Name eingeben" />
+        <button id="startButton" disabled>🚀 Spiel starten</button>
+        <h3>Wähle eine Schwierigkeit:</h3>
+        <p id="schwierigkeit-info"></p>
+        <button class="leicht" onclick="setSchwierigkeit(10, 180)">🌱 Leicht (3 Minuten, 50 Aufgaben)</button>
+        <button class="mittel" onclick="setSchwierigkeit(15, 120)">🌟 Mittel (2 Minuten, 50 Aufgaben)</button>
+        <button class="schwer" onclick="setSchwierigkeit(20, 60)">🔥 Schwer (1 Minute, 50 Aufgaben)</button>
+
+        <!-- Hauptmenü Button -->
+        <button id="mainMenuButton" onclick="window.history.back()">🔙 Zurück</button>
+    </div>
+
+    <!-- Spielseite -->
+    <div id="spiel-container" style="display:none;">
+        <h3 id="aufgabe">Warte auf Aufgabe...</h3>
+        <input type="number" id="antwort" placeholder="Antwort eingeben" disabled>
+        <button onclick="checkAntwort()">✔️ Überprüfen</button>
+        <button id="losButton" style="display:none;" onclick="startTimer()">⏱️ Los</button>
+        <p id="feedback"></p>
+        <p>Verbleibende Aufgaben: <span id="aufgabenVerbleibend">50</span></p>
+        <p id="timer">180</p>
+    </div>
+
+    <!-- Endseite -->
+    <div id="end-container" style="display:none;">
+        <h2>Deine Leistung</h2>
+        <p id="leistung-info"></p>
+        <button onclick="startNewGame()">Neues Spiel</button>
+    </div>
+
+    <script>
+        let zahl1, zahl2, richtigeAntwort;
+        let punkte = 0;
+        let maxZahl = 10;
+        let timer;
+        let zeitÜbrig = 0;
+        let spielGestartet = false;
+        let spielerName = '';
+        let startZeit = Date.now();
+        let aufgabenBeendet = 0;
+        let gesamtAufgaben = 50;
+
+        // Name und Schwierigkeit wählen
+        document.getElementById("startButton").addEventListener("click", startSpiel);
+
+        // Starte das Spiel nach der Namens- und Schwierigkeitswahl
+        function startSpiel() {
+            spielerName = document.getElementById('spielerName').value;
+            if (!spielerName) {
+                alert('Bitte deinen Namen eingeben!');
+                return;
+            }
+
+            // Verstecke Nameingabefeld und Startbutton
+            document.getElementById("name-container").style.display = 'none';
+
+            // Zeige Spielcontainer
+            document.getElementById("spiel-container").style.display = "inline-block";
+            neueAufgabe();
+        }
+
+        // Schwierigkeit auswählen
+        function setSchwierigkeit(max, time) {
+            // Entferne die Hervorhebung von allen Buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.classList.remove('selected'));
+
+            // Setze die Schwierigkeit und den Timer
+            maxZahl = Math.min(max, 10);  // Die maximale Zahl wird auf 10 begrenzt
+            zeitÜbrig = time;
+            punkte = 0;
+            aufgabenBeendet = 0;
+            document.getElementById("aufgabenVerbleibend").innerText = gesamtAufgaben;
+            document.getElementById("timer").innerText = zeitÜbrig;
+
+            // Wähle den richtigen Button aus
+            if (max === 10) {
+                document.querySelector('.leicht').classList.add('selected');
+            } else if (max === 15) {
+                document.querySelector('.mittel').classList.add('selected');
+            } else if (max === 20) {
+                document.querySelector('.schwer').classList.add('selected');
+            }
+
+            document.getElementById("startButton").disabled = false; // Starte Button aktivieren
+        }
+
+        // Timer starten
+        function startTimer() {
+            document.getElementById("losButton").style.display = 'none'; // "Los" Button ausblenden, wenn gestartet
+            document.getElementById("antwort").disabled = false; // Antwortfeld aktivieren
+            timer = setInterval(() => {
+                zeitÜbrig--;
+                document.getElementById("timer").innerText = zeitÜbrig;
+                if (zeitÜbrig === 0) {
+                    clearInterval(timer);
+                    showEndScreen();
+                }
+            }, 1000); // Timer aktualisiert jetzt pro Sekunde
+        }
+
+        // Neue Aufgabe generieren
+        function neueAufgabe() {
+            if (aufgabenBeendet >= gesamtAufgaben) {
+                clearInterval(timer);
+                showEndScreen();
+                return;
+            }
+
+            zahl1 = Math.floor(Math.random() * 10) + 1;  // Aufgabe geht nur bis 10x10
+            zahl2 = Math.floor(Math.random() * 10) + 1;  // Aufgabe geht nur bis 10x10
+            richtigeAntwort = zahl1 * zahl2;
+            document.getElementById("aufgabe").innerText = `${zahl1} × ${zahl2} = ?`;
+            document.getElementById("antwort").value = "";
+            document.getElementById("feedback").innerText = "";
+            if (aufgabenBeendet === 0) {
+                document.getElementById("losButton").style.display = 'inline-block'; // Zeige den "Los" Button nur bei der ersten Aufgabe
+            }
+        }
+
+        // Antwort überprüfen
+        function checkAntwort() {
+            let antwort = parseInt(document.getElementById("antwort").value);
+
+            if (antwort === richtigeAntwort) {
+                punkte++;
+            } else {
+                document.getElementById("feedback").innerText = `Falsch! Die richtige Antwort ist ${richtigeAntwort}.`;
+            }
+
+            aufgabenBeendet++;
+            document.getElementById("aufgabenVerbleibend").innerText = gesamtAufgaben - aufgabenBeendet;
+
+            if (aufgabenBeendet < gesamtAufgaben) {
+                neueAufgabe();
+            } else {
+                clearInterval(timer);
+                showEndScreen();
+            }
+        }
+
+        // Zeige Endbildschirm
+        function showEndScreen() {
+            document.getElementById("spiel-container").style.display = "none";
+            document.getElementById("end-container").style.display = "inline-block";
+
+            let note = calculateGrade(punkte);
+            document.getElementById("leistung-info").innerText = `Du hast ${punkte} von ${gesamtAufgaben} Punkten erreicht. Deine Note ist ${note}.`;
+        }
+
+        // Berechne die Note basierend auf den Punkten
+        function calculateGrade(punkte) {
+            if (punkte >= 49) return "1.0";
+            else if (punkte >= 47) return "1.25";
+            else if (punkte >= 44) return "1.5";
+            else if (punkte >= 42) return "1.75";
+            else if (punkte >= 39) return "2.0";
+            else if (punkte >= 37) return "2.25";
+            else if (punkte >= 34) return "2.5";
+            else if (punkte >= 32) return "2.75";
+            else if (punkte >= 29) return "3.0";
+            else if (punkte >= 27) return "3.25";
+            else if (punkte >= 24) return "3.5";
+            else if (punkte >= 22) return "3.75";
+            else if (punkte >= 19) return "4.0";
+            else if (punkte >= 17) return "4.25";
+            else if (punkte >= 14) return "4.5";
+            else if (punkte >= 12) return "4.75";
+            else if (punkte >= 9) return "5.0";
+            else if (punkte >= 7) return "5.25";
+            else if (punkte >= 4) return "5.5";
+            else if (punkte >= 2) return "5.75";
+            else return "6.0";
+        }
+
+        // Neues Spiel starten
+        function startNewGame() {
+            location.reload(); // Einfach die Seite neu laden, um das Spiel zurückzusetzen
+        }
+    </script>
+</body>
+</html>
