@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS-Kau-Tools</title>
+    <title>Klasse 3 Tools</title>
     <style>
         body {
             background-image: url('https://png.pngtree.com/background/20210706/original/pngtree-creative-blackboard-mathematical-background-picture-image_102289.jpg');
@@ -16,13 +16,33 @@
             justify-content: center;
             align-items: center;
             font-family: 'Comic Sans MS', cursive, sans-serif;
+            position: relative;
+        }
+
+        /* Der Zurück-Button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+            background-color: #f39c12;
         }
 
         .button-wrapper {
             display: flex;
             gap: 30px;
-            flex-direction: column;
-            align-items: center;
         }
 
         .button-container {
@@ -62,26 +82,20 @@
 </head>
 <body>
 
+    <!-- Zurück-Button oben links -->
+    <button class="back-button" onclick="window.location.href='index.html'">Zurück</button>
+
     <div class="button-wrapper">
-        <!-- Buttons für Klasse 2, 3, 4a, und 4b -->
         <div class="button-container">
-            <button class="math-button" onclick="window.location.href='index2.html'">Klasse 2</button>
-            <button class="german-button" onclick="window.location.href='index3.html'">Klasse 3</button>
-            <button class="english-button" onclick="window.location.href='index4a.html'">Klasse 4a</button>
-            <button class="quop-button" onclick="window.location.href='index4b.html'">Klasse 4b</button>
+            <button class="math-button" onclick="window.location.href='https://testmoz.com/14327600'">Mathe</button>
+            <button class="german-button" onclick="window.location.href='https://testmoz.com/14330806'">Deutsch</button>
+            <button class="english-button" onclick="window.location.href='https://testmoz.com/14330816'">Englisch</button>
+        </div>
+        <div class="button-container">
+            <button class="quop-button" onclick="window.location.href='https://system.quop.de/'">Quop</button>
+            <button class="anton-button" onclick="window.location.href='https://anton.app'">Anton</button>
         </div>
     </div>
-<style>
-.math-button:hover {background-color: aqua;}
-.german-button:hover {background-color: aqua;}
-.english-button:hover {background-color: aqua;}
-.quop-button:hover {background-color: aqua;}
 
-.math-button {background-color: white; color: black;}
-.german-button {background-color: white; color: black;}
-.english-button {background-color: white; color: black;}
-.quop-button {background-color: white; color: black;}
-
-</style>
 </body>
 </html>
