@@ -25,8 +25,9 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 1000px;
             width: 100%;
+            overflow: hidden;
         }
 
         h1, h2 {
@@ -45,7 +46,8 @@
         }
 
         input {
-            font-size: 20px;
+            font-size: 18px;
+            width: 40%; /* Verkleinere die Eingabefelder */
         }
 
         button {
@@ -63,7 +65,7 @@
         .leicht {
             background: #32CD32;
         }
-        
+
         .mittel {
             background: #FFA500;
         }
@@ -101,31 +103,6 @@
             font-weight: bold;
         }
 
-        #aufgabenVerbleibend {
-            font-size: 20px;
-        }
-
-        #losButton {
-            background-color: #4CAF50;
-        }
-
-        #losButton:hover {
-            background-color: #45a049;
-        }
-
-        /* Button ausgrauen */
-        #startButton:disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
-        }
-
-        /* Antwortfeld deaktivieren */
-        #antwort:disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
-        }
-
-        /* Zurück Button oben links wie die Schwierigkeits Buttons */
         #backButton {
             background-color: #32CD32;
             color: black;
@@ -143,7 +120,6 @@
             background-color: #28a745;
         }
 
-        /* Zurück Button unter der schweren Schwierigkeit */
         #mainMenuButton {
             background-color: #FFFFFF;
             color: black;
@@ -160,36 +136,72 @@
             background-color: #f0f0f0;
         }
 
+        #aufgaben {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* 7 Spalten */
+            gap: 20px; /* Mehr Abstand zwischen den Spalten */
+            margin-top: 20px;
+            text-align: left;
+            justify-items: center;
+            overflow: hidden;
+        }
+
+        .aufgabe {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .antwort {
+            width: 60%; /* Antwortfelder kleiner */
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        #checkButton {
+            position: relative;
+            background-color: #FF6347;
+            color: white;
+            font-size: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px; /* Button nach oben verschieben */
+            width: auto;
+            box-sizing: border-box;
+        }
+
+        #checkButton:hover {
+            background-color: #FF4500;
+        }
+
+        #losButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
     </style>
 </head>
 <body>
-    <!-- Name und Schwierigkeit Auswahl -->
     <div id="name-container">
         <h1>🎲 Einmaleins-Spiel 🎲</h1>
         <input type="text" id="spielerName" placeholder="Name eingeben" />
         <button id="startButton" disabled>🚀 Spiel starten</button>
         <h3>Wähle eine Schwierigkeit:</h3>
         <p id="schwierigkeit-info"></p>
-        <button class="leicht" onclick="setSchwierigkeit(10, 300)">🌱 Leicht (5 Minuten, 50 Aufgaben)</button>
-        <button class="mittel" onclick="setSchwierigkeit(15, 240)">🌟 Mittel (4 Minuten, 50 Aufgaben)</button>
-        <button class="schwer" onclick="setSchwierigkeit(20, 180)">🔥 Schwer (3 Minuten, 50 Aufgaben)</button>
-
-        <!-- Zurück Button -->
+        <button class="leicht" onclick="setSchwierigkeit(10, 302)">🌱 Leicht (5 Minuten + 2 Sekunden, 50 Aufgaben)</button>
+        <button class="mittel" onclick="setSchwierigkeit(15, 242)">🌟 Mittel (4 Minuten + 2 Sekunden, 50 Aufgaben)</button>
+        <button class="schwer" onclick="setSchwierigkeit(20, 182)">🔥 Schwer (3 Minuten + 2 Sekunden, 50 Aufgaben)</button>
         <button id="mainMenuButton" onclick="window.history.back()">🔙 Zurück</button>
     </div>
 
-    <!-- Spielseite -->
     <div id="spiel-container" style="display:none;">
         <h3 id="aufgabe">Warte auf Aufgabe...</h3>
-        <input type="number" id="antwort" placeholder="Antwort eingeben" disabled>
-        <button onclick="checkAntwort()">✔️ Überprüfen</button>
-        <button id="losButton" style="display:none;" onclick="startTimer()">⏱️ Los</button>
+        <div id="aufgaben"></div>
         <p id="feedback"></p>
-        <p>Verbleibende Aufgaben: <span id="aufgabenVerbleibend">50</span></p>
-        <p id="timer">300</p>
+        <p id="timer">302</p>
+        <button id="checkButton" onclick="checkAlleAntworten()">Überprüfen</button>
     </div>
 
-    <!-- Endseite -->
     <div id="end-container" style="display:none;">
         <h2>Deine Leistung</h2>
         <p id="leistung-info"></p>
@@ -207,11 +219,10 @@
         let startZeit = Date.now();
         let aufgabenBeendet = 0;
         let gesamtAufgaben = 50;
+        let alleAufgaben = [];
 
-        // Name und Schwierigkeit wählen
         document.getElementById("startButton").addEventListener("click", startSpiel);
 
-        // Starte das Spiel nach der Namens- und Schwierigkeitswahl
         function startSpiel() {
             spielerName = document.getElementById('spielerName').value;
             if (!spielerName) {
@@ -219,29 +230,22 @@
                 return;
             }
 
-            // Verstecke Nameingabefeld und Startbutton
             document.getElementById("name-container").style.display = 'none';
-
-            // Zeige Spielcontainer
             document.getElementById("spiel-container").style.display = "inline-block";
-            neueAufgabe();
+            startTimer();
+            erstelleAlleAufgaben();
         }
 
-        // Schwierigkeit auswählen
         function setSchwierigkeit(max, time) {
-            // Entferne die Hervorhebung von allen Buttons
             const buttons = document.querySelectorAll('button');
             buttons.forEach(button => button.classList.remove('selected'));
 
-            // Setze die Schwierigkeit und den Timer
-            maxZahl = Math.min(max, 10);  // Die maximale Zahl wird auf 10 begrenzt
+            maxZahl = Math.min(max, 10);  // Begrenze die Multiplikation auf max 10x10
             zeitÜbrig = time;
             punkte = 0;
             aufgabenBeendet = 0;
-            document.getElementById("aufgabenVerbleibend").innerText = gesamtAufgaben;
             document.getElementById("timer").innerText = zeitÜbrig;
 
-            // Wähle den richtigen Button aus
             if (max === 10) {
                 document.querySelector('.leicht').classList.add('selected');
             } else if (max === 15) {
@@ -250,64 +254,57 @@
                 document.querySelector('.schwer').classList.add('selected');
             }
 
-            document.getElementById("startButton").disabled = false; // Starte Button aktivieren
+            document.getElementById("startButton").disabled = false;
         }
 
-        // Timer starten
         function startTimer() {
-            document.getElementById("losButton").style.display = 'none'; // "Los" Button ausblenden, wenn gestartet
-            document.getElementById("antwort").disabled = false; // Antwortfeld aktivieren
             timer = setInterval(() => {
                 zeitÜbrig--;
                 document.getElementById("timer").innerText = zeitÜbrig;
                 if (zeitÜbrig === 0) {
                     clearInterval(timer);
+                    checkAlleAntworten();  // Überprüfe alle Antworten, wenn der Timer abläuft
                     showEndScreen();
                 }
-            }, 1000); // Timer aktualisiert jetzt pro Sekunde
+            }, 1000);
         }
 
-        // Neue Aufgabe generieren
-        function neueAufgabe() {
-            if (aufgabenBeendet >= gesamtAufgaben) {
-                clearInterval(timer);
-                showEndScreen();
-                return;
+        function erstelleAlleAufgaben() {
+            alleAufgaben = [];
+            for (let i = 0; i < gesamtAufgaben; i++) {
+                let zahl1 = Math.floor(Math.random() * 10) + 1; // Begrenze auf 10
+                let zahl2 = Math.floor(Math.random() * 10) + 1; // Begrenze auf 10
+                let richtigeAntwort = zahl1 * zahl2;
+                alleAufgaben.push({ zahl1, zahl2, richtigeAntwort });
             }
-
-            zahl1 = Math.floor(Math.random() * 10) + 1;  // Aufgabe geht nur bis 10x10
-            zahl2 = Math.floor(Math.random() * 10) + 1;  // Aufgabe geht nur bis 10x10
-            richtigeAntwort = zahl1 * zahl2;
-            document.getElementById("aufgabe").innerText = `${zahl1} × ${zahl2} = ?`;
-            document.getElementById("antwort").value = "";
-            document.getElementById("feedback").innerText = "";
-            if (aufgabenBeendet === 0) {
-                document.getElementById("losButton").style.display = 'inline-block'; // Zeige den "Los" Button nur bei der ersten Aufgabe
-            }
+            zeigeAufgaben();
         }
 
-        // Antwort überprüfen
-        function checkAntwort() {
-            let antwort = parseInt(document.getElementById("antwort").value);
+        function zeigeAufgaben() {
+            let aufgabeContainer = document.getElementById("aufgaben");
+            aufgabeContainer.innerHTML = ''; 
 
-            if (antwort === richtigeAntwort) {
-                punkte++;
-            } else {
-                document.getElementById("feedback").innerText = `Falsch! Die richtige Antwort ist ${richtigeAntwort}.`;
-            }
-
-            aufgabenBeendet++;
-            document.getElementById("aufgabenVerbleibend").innerText = gesamtAufgaben - aufgabenBeendet;
-
-            if (aufgabenBeendet < gesamtAufgaben) {
-                neueAufgabe();
-            } else {
-                clearInterval(timer);
-                showEndScreen();
-            }
+            alleAufgaben.forEach((aufgabe, index) => {
+                let aufgabeDiv = document.createElement("div");
+                aufgabeDiv.classList.add("aufgabe");
+                aufgabeDiv.innerHTML = `${aufgabe.zahl1} × ${aufgabe.zahl2} = <input class="antwort" type="number" id="antwort${index}" placeholder="Antwort" />`;
+                aufgabeContainer.appendChild(aufgabeDiv);
+            });
         }
 
-        // Zeige Endbildschirm
+        function checkAlleAntworten() {
+            punkte = 0;
+            alleAufgaben.forEach((aufgabe, index) => {
+                let antwort = parseInt(document.getElementById(`antwort${index}`).value);
+                if (antwort === aufgabe.richtigeAntwort) {
+                    punkte++;
+                }
+            });
+
+            clearInterval(timer);
+            showEndScreen();
+        }
+
         function showEndScreen() {
             document.getElementById("spiel-container").style.display = "none";
             document.getElementById("end-container").style.display = "inline-block";
@@ -316,19 +313,30 @@
             document.getElementById("leistung-info").innerText = `Du hast ${punkte} von ${gesamtAufgaben} Punkten erreicht. Deine Note ist ${note}.`;
         }
 
-        // Berechne die Note basierend auf den Punkten
         function calculateGrade(punkte) {
             if (punkte >= 49) return "1.0";
-            else if (punkte >= 45) return "1.3";
-            else if (punkte >= 40) return "1.7";
-            else if (punkte >= 35) return "2.0";
-            else if (punkte >= 30) return "2.3";
-            else if (punkte >= 25) return "2.7";
-            else if (punkte >= 20) return "3.0";
-            else return "3.3";
+            else if (punkte >= 47) return "1.25";
+            else if (punkte >= 44) return "1.5";
+            else if (punkte >= 42) return "1.75";
+            else if (punkte >= 39) return "2.0";
+            else if (punkte >= 37) return "2.25";
+            else if (punkte >= 34) return "2.5";
+            else if (punkte >= 32) return "2.75";
+            else if (punkte >= 29) return "3.0";
+            else if (punkte >= 27) return "3.25";
+            else if (punkte >= 24) return "3.5";
+            else if (punkte >= 22) return "3.75";
+            else if (punkte >= 19) return "4.0";
+            else if (punkte >= 17) return "4.25";
+            else if (punkte >= 14) return "4.5";
+            else if (punkte >= 12) return "4.75";
+            else if (punkte >= 9) return "5.0";
+            else if (punkte >= 7) return "5.25";
+            else if (punkte >= 4) return "5.5";
+            else if (punkte >= 2) return "5.75";
+            else return "6.0";
         }
 
-        // Starte ein neues Spiel
         function startNewGame() {
             location.reload();
         }
