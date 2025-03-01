@@ -19,7 +19,6 @@
             position: relative;
         }
 
-        /* Der Zurück-Button */
         .back-button {
             position: absolute;
             top: 20px;
@@ -70,7 +69,8 @@
         .math-button { background-color: #3498db; color: white; }
         .german-button { background-color: #f1c40f; color: black; }
         .english-button { background-color: #e74c3c; color: white; }
-        .quop-button { background-color: white; color: black; } 
+        .it4kids-button { background-color: #16a085; color: white; } /* Neuer IT4Kids-Button */
+        .quop-button { background-color: white; color: black; }
         .vocab-button { background-color: #9b59b6; color: white; }
         .anton-button { background-color: aqua; color: black; }
         .training-button { background-color: #2ecc71; color: white; }
@@ -78,6 +78,7 @@
         .math-button:hover { background-color: #2980b9; }
         .german-button:hover { background-color: #f39c12; }
         .english-button:hover { background-color: #c0392b; }
+        .it4kids-button:hover { background-color: #138d75; }
         .quop-button:hover { background-color: grey; }
         .vocab-button:hover { background-color: #8e44ad; }
         .anton-button:hover { background-color: lightblue; }
@@ -87,7 +88,6 @@
 </head>
 <body>
 
-    <!-- Zurück-Button oben links -->
     <button class="back-button" onclick="window.location.href='index.html'">Zurück</button>
 
     <div class="button-wrapper">
@@ -95,11 +95,12 @@
             <button class="math-button" onclick="window.location.href='https://testmoz.com/14333224'">Mathe</button>
             <button class="german-button" onclick="window.location.href='https://testmoz.com/14333228'">Deutsch</button>
             <button class="english-button" onclick="window.location.href='https://testmoz.com/14333230'">Englisch</button>
+            <button class="it4kids-button" onclick="window.location.href='https://editor.i4k.org'">IT4Kids</button> <!-- Neuer Button -->
         </div>
         <div class="button-container">
             <button class="quop-button" onclick="window.location.href='https://system.quop.de/'">Quop</button>
-            <button class="anton-button" onclick="window.location.href='https://anton.app'">Anton</button> <!-- Anton ist jetzt über Vokabeln -->
-            <button class="vocab-button" onclick="window.location.href='indexvokabel.html'">Vokabeln</button> <!-- Umbenannt & getauscht -->
+            <button class="anton-button" onclick="window.location.href='https://anton.app'">Anton</button>
+            <button class="vocab-button" onclick="window.location.href='indexvokabel.html'">Vokabeln</button>
             <button class="training-button" onclick="window.location.href='indextraining.html'">1x1 Training</button>
         </div>
     </div>
