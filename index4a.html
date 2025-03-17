@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klasse 4a Tools</title>
     <style>
-        body {
-            background-image: url('https://png.pngtree.com/background/20210706/original/pngtree-creative-blackboard-mathematical-background-picture-image_102289.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+       body {
+            background: linear-gradient(135deg, #3498db, #e74c3c);
+            background-size: 200% 200%;
+            animation: gradientAnimation 10s ease infinite;
             height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Comic Sans MS', cursive, sans-serif;
-            position: relative;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .back-button {
